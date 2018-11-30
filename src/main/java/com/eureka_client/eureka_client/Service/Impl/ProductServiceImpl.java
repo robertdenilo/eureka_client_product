@@ -10,7 +10,9 @@ import com.eureka_client.eureka_client.Enums.ResultEnum;
 import com.eureka_client.eureka_client.Exception.ProductException;
 import com.eureka_client.eureka_client.Repository.ProductRepository;
 import com.eureka_client.eureka_client.Service.ProductService;
+import com.eureka_client.eureka_client.Utils.JsonUtil;
 import com.netflix.discovery.converters.Auto;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,9 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
     @Override
     public List<ProductInfo> findUpAll() {
         return productRepository.findByProductStatus(ProductStatusEnum.UP.getCode());
@@ -46,7 +51,9 @@ public class ProductServiceImpl implements ProductService {
             if (result <0){throw new ProductException(ResultEnum.PRODUCT_STOCK_ERROR);}
             productInfo.setProductStock(result);
             productRepository.save(productInfo);
-        }
 
+            //send MQ
+            amqpTemplate.convertAndSend("productInfo", JsonUtil.toJson(productInfo));
+        }
     }
 }
