@@ -63,7 +63,7 @@ public class ProductConntroller {
         return productService.findList(productIdList);
     }
 
-    @PostMapping("/decreaseStock")
+    @PostMapping("/decreaseStock")   //contentType=application/json
     public void decreaseStock(@RequestBody List<CartDTO> cartDTOList){
         productService.descreaseStock(cartDTOList);
     }
