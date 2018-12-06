@@ -1,0 +1,15 @@
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: MyProduct
+  cloud:
+    config:
+      discovery:
+        enabled: true  #change to true if using config center  #http://localhost:8080/MyProduct-dev.yml
+        service-id: CONFIG
+      profile: dev
+server:
+    port: 8081
